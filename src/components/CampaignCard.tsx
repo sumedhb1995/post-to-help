@@ -138,7 +138,9 @@ const CampaignCard = (props: { campaign: ICampaign }): JSX.Element => {
                         }}
                       />
                     </Icon>
-                    {`@${campaign.lensUsername}`}
+                    {campaign.lensUsername.length > 16
+                      ? `@${campaign.lensUsername.substring(10)}...`
+                      : `@${campaign.lensUsername}`}
                   </Typography>
                 ) : null}
               </Grid>
@@ -162,7 +164,7 @@ const CampaignCard = (props: { campaign: ICampaign }): JSX.Element => {
                       style={{
                         position: "absolute",
                         right: 12,
-                        bottom: 34,
+                        bottom: 38,
                       }}
                     />
                   </Icon>

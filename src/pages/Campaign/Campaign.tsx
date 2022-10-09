@@ -18,6 +18,7 @@ import { CampaignContext } from "../../contexts/CampaignContext";
 import { IAffiliateData } from "./types";
 import { generateMerkleTree, generateProof } from "../../web3/merkleTree";
 import { CampaignCarousel } from "../../components/CampaignCarousel";
+import { ILensItem, ILensProtocolData } from "../../interfaces";
 
 export const Campaign = (): JSX.Element => {
   const { campaigns } = React.useContext(CampaignContext);
@@ -38,6 +39,40 @@ export const Campaign = (): JSX.Element => {
     number | undefined
   >();
   const [rewardsUploaded, setRewardsUploaded] = React.useState(false);
+  const [lensProtocolData, setLensProtocolData] =
+    React.useState<ILensProtocolData>({ posts: [], supporterScore: 0 });
+
+  React.useEffect(() => {
+    if (user?.lensUsername && campaign?.lensUsername && campaign) {
+      axios
+        .post(`http://localhost:8000/api/users/getScores`, {
+          username: user.lensUsername,
+          campaign_username: campaign.lensUsername,
+        })
+        .then((response) => {
+          console.log(response);
+          console.log(response.data);
+          const posts: ILensItem[] = [];
+          response.data.posterData.publications.forEach((publication: any) => {
+            const post: ILensItem = {
+              username: publication.profile.name,
+              lensUserId: publication.profile.handle,
+              content: publication.metadata.content,
+              campaignId: campaign.id ?? "",
+              timestamp: publication.createdAt,
+              postId: publication.id,
+            };
+            posts.push(post);
+          });
+          setLensProtocolData({
+            posts,
+            supporterScore: parseInt(
+              response.data.supporterData.countReactionFromUsername
+            ),
+          });
+        });
+    }
+  }, [user?.lensUsername, campaign?.lensUsername, campaign]);
 
   const addFunds = React.useCallback(
     async (amount: number) => {
@@ -57,7 +92,6 @@ export const Campaign = (): JSX.Element => {
   );
 
   // Fetch the campaign itself from our DB
-
   const fetchCampaign = React.useCallback(() => {
     axios
       .get(`${process.env.REACT_APP_BACKEND_URL}/campaigns/${id}`)
@@ -197,6 +231,7 @@ export const Campaign = (): JSX.Element => {
                 affiliateData={affiliateData}
                 campaignId={campaign.id}
                 fetchCampaign={fetchCampaign}
+                lensProtocolData={lensProtocolData}
               />
             ) : null}
           </div>

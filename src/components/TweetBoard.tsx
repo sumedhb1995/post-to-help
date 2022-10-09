@@ -3,13 +3,16 @@ import { Grid, Typography } from "@mui/material";
 
 import { IAffiliateData } from "../pages/Campaign/types";
 import { TweetWidget } from "./TweetWidget";
+import { LensWidget } from "./LensWidget";
+import { ILensProtocolData } from "../interfaces";
 
 export const TweetBoard = (props: {
   affiliateData: IAffiliateData;
   campaignId: string;
   fetchCampaign: () => void;
+  lensProtocolData: ILensProtocolData;
 }): JSX.Element => {
-  const { affiliateData, campaignId, fetchCampaign } = props;
+  const { affiliateData, campaignId, fetchCampaign, lensProtocolData } = props;
   let rows: JSX.Element[] = [];
 
   const data = React.useMemo(
@@ -25,7 +28,7 @@ export const TweetBoard = (props: {
       participant.tweets.mentions.forEach((tweet) => {
         rows.push(
           <Grid
-            key={`username-label-${tweet.id}`}
+            key={`mention-tweet-${tweet.id}`}
             item
             xs={4}
             marginTop={2}
@@ -52,7 +55,7 @@ export const TweetBoard = (props: {
       participant.tweets.referrals.forEach((tweet) => {
         rows.push(
           <Grid
-            key={`username-label-${tweet.id}`}
+            key={`referral-tweet-${tweet.id}`}
             item
             xs={4}
             marginTop={2}
@@ -76,6 +79,24 @@ export const TweetBoard = (props: {
           </Grid>
         );
       });
+    });
+    lensProtocolData.posts.forEach((post) => {
+      rows.push(
+        <Grid
+          key={`lens-post-${post.postId}`}
+          item
+          xs={4}
+          marginTop={2}
+          marginBottom={2}
+          style={{
+            border: "none",
+            boxShadow: "none",
+            textAlign: "left",
+          }}
+        >
+          <LensWidget {...post} />
+        </Grid>
+      );
     });
   } else {
     rows.push(

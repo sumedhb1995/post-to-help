@@ -46,3 +46,17 @@ export interface IUser {
     result: { display_scores: { english: { overall: number } } };
   };
 }
+
+export interface ILensProtocolData {
+  posts: ILensItem[];
+  supporterScore: number;
+}
+
+export interface ILensItem {
+  username: string;
+  lensUserId: string;
+  content: string;
+  timestamp: string;
+  campaignId: string;
+  postId: string;
+}
