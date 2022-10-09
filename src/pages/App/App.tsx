@@ -253,11 +253,6 @@ export const App = (): JSX.Element => {
             <main>
               <Switch>
                 <Route
-                  path="/campaigns/my"
-                  exact={true}
-                  component={MyCampaigns}
-                />
-                <Route
                   path="/campaigns/view/:id"
                   exact={true}
                   component={Campaign}
@@ -268,6 +263,7 @@ export const App = (): JSX.Element => {
                   exact={true}
                   render={() => <Profile onLoggedOut={handleLoggedOut} />}
                 />
+                <Route path="*" component={MyCampaigns} />
               </Switch>
             </main>
           </AuthContext.Provider>
