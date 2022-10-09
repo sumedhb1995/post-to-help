@@ -138,8 +138,8 @@ const CampaignCard = (props: { campaign: ICampaign }): JSX.Element => {
                         }}
                       />
                     </Icon>
-                    {campaign.lensUsername.length > 16
-                      ? `@${campaign.lensUsername.substring(10)}...`
+                    {campaign.lensUsername.length > 20
+                      ? `@${campaign.lensUsername.substring(0, 20)}...`
                       : `@${campaign.lensUsername}`}
                   </Typography>
                 ) : null}

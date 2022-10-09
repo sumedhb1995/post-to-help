@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Button,
   CircularProgress,
   Grid,
   Link,
@@ -19,6 +20,7 @@ import { IAffiliateData } from "./types";
 import { generateMerkleTree, generateProof } from "../../web3/merkleTree";
 import { CampaignCarousel } from "../../components/CampaignCarousel";
 import { ILensItem, ILensProtocolData } from "../../interfaces";
+import { Upload } from "@mui/icons-material";
 
 export const Campaign = (): JSX.Element => {
   const { campaigns } = React.useContext(CampaignContext);
@@ -41,6 +43,7 @@ export const Campaign = (): JSX.Element => {
   const [rewardsUploaded, setRewardsUploaded] = React.useState(false);
   const [lensProtocolData, setLensProtocolData] =
     React.useState<ILensProtocolData>({ posts: [], supporterScore: 0 });
+  const [isUploadingRewards, setIsUploadingRewards] = React.useState(false);
 
   React.useEffect(() => {
     if (user?.lensUsername && campaign?.lensUsername && campaign) {
@@ -90,6 +93,24 @@ export const Campaign = (): JSX.Element => {
     },
     [web3Client, contractAddress, user]
   );
+
+  const uploadRewards = React.useCallback(() => {
+    if (campaign) {
+      setIsUploadingRewards(true);
+      axios
+        .get(
+          `${process.env.REACT_APP_BACKEND_URL}/campaigns/uploadRoot/${campaign.id}`
+        )
+        .then((value) => {
+          setAffiliateData(value.data);
+          setRewardsUploaded(true);
+        })
+        .catch((e) => {
+          console.log(e);
+        })
+        .finally(() => setIsUploadingRewards(false));
+    }
+  }, [campaign]);
 
   // Fetch the campaign itself from our DB
   const fetchCampaign = React.useCallback(() => {
@@ -326,6 +347,30 @@ export const Campaign = (): JSX.Element => {
                   <Typography style={{ marginBottom: 20 }} variant="body2">
                     {campaign?.description}
                   </Typography>
+                  {campaign.createdByUserId === `${user.id}` ? (
+                    <Button
+                      style={{
+                        color: rewardsUploaded ? "grey" : "white",
+                      }}
+                      disabled={rewardsUploaded || isUploadingRewards}
+                      onClick={() => {
+                        uploadRewards();
+                      }}
+                    >
+                      {isUploadingRewards ? (
+                        <CircularProgress
+                          size={20}
+                          style={{
+                            marginRight: 5,
+                            color: "white",
+                          }}
+                        />
+                      ) : (
+                        <Upload />
+                      )}
+                      {rewardsUploaded ? "Rewards Uploaded" : `Upload Rewards`}
+                    </Button>
+                  ) : null}
                 </div>
               </Grid>
               <Grid

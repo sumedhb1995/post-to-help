@@ -45,7 +45,10 @@ const AppHeader = (): JSX.Element => {
         </Toolbar>
       </AppBar>
 
-      <img src={title} style={{ width: 500 }} />
+      <Link to="/campaigns/my">
+        <img src={title} style={{ width: 500 }} />
+      </Link>
+
       <Typography
         variant="h6"
         fontWeight={300}

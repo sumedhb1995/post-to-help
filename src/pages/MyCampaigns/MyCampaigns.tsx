@@ -12,6 +12,7 @@ import { ICampaignLeaderboardData } from "../Campaign/types";
 import { CampaignLeaderboard } from "../../components/CampaignLeaderboard";
 
 import poweredByImage from "../../assets/powered-by.png";
+import howItWorksImage from "../../assets/how-it-works.png";
 
 const LB_LIMIT = 5;
 
@@ -139,12 +140,15 @@ export const MyCampaigns = (): JSX.Element => {
       >
         <CampaignLeaderboard leaderboardData={leaderboardData} />
       </div>
-      <div style={{ width: "100%", textAlign: "center" }}>
+      <div style={{ width: "100%", textAlign: "center", marginBottom: 20 }}>
+        <img style={{ maxWidth: 1200 }} src={howItWorksImage} />
+      </div>
+      <div style={{ width: "100%", textAlign: "center", marginTop: 20 }}>
         <Typography
           variant="subtitle1"
           fontWeight="bolder"
           color={"black"}
-          style={{ marginBottom: 5 }}
+          style={{ marginTop: 100 }}
         >
           Powered by:
         </Typography>
