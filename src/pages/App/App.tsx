@@ -175,24 +175,39 @@ export const App = (): JSX.Element => {
     (auth: IAuth, isNewUser: boolean, provider: any) => {
       const decodedToken = jwtDecode<any>(auth.accessToken);
       console.log(JSON.stringify(decodedToken));
-      const { wallets } = decodedToken;
       let currentUser: IUser | undefined;
-      fetch(
-        `${
-          process.env.REACT_APP_BACKEND_URL
-        }/users/byPublicAddress/${wallets[0].address.toLowerCase()}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${auth.accessToken}`,
-          },
-        }
-      )
-        .then((response) => response.json())
+      getAccounts(provider)
+        .then((address) => {
+          if (!address) {
+            throw Error("User public address not found");
+          }
+          return fetch(
+            `${
+              process.env.REACT_APP_BACKEND_URL
+            }/users/byPublicAddress/${address.toLowerCase()}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${auth.accessToken}`,
+              },
+            }
+          )
+            .then((response) => response.json())
+            .catch(() => {
+              // TODO: Do this securely by verifying app private key
+              // https://web3auth.io/docs/server-side-verification/social-login-users#getting-app_pub_key-and-idtoken-in-frontend
+              return fetch(
+                `${
+                  process.env.REACT_APP_BACKEND_URL
+                }/users?publicAddress=${address.toLowerCase()}`
+              )
+                .then((response) => response.json())
+                .then((users) => users[0]);
+            });
+        })
         .then((user) => {
           currentUser = user;
           setUser(user);
-
           axios.defaults.headers.common[
             "Authorization"
           ] = `Bearer ${auth.accessToken}`;
@@ -249,7 +264,7 @@ export const App = (): JSX.Element => {
               web3Client,
             }}
           >
-            {isAuthenticated && user?.isAdmittedToAlpha ? <AppHeader /> : null}
+            {isAuthenticated ? <AppHeader /> : null}
             <main>
               <Switch>
                 <Route
